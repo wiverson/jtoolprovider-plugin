@@ -1,4 +1,4 @@
-package com.doublerobot;
+package io.github.wiverson;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;

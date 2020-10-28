@@ -37,7 +37,7 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>com.doublerobot</groupId>
+                <groupId>io.github.wiverson</groupId>
                 <artifactId>java-tools-plugin</artifactId>
                 <version>1.0-SNAPSHOT</version>
                 <executions>

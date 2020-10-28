@@ -1,6 +1,6 @@
-package com.doublerobot.test;
+package io.github.wiverson.test;
 
-import com.doublerobot.ToolProviderAdapter;
+import io.github.wiverson.ToolProviderAdapter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.Test;
 import org.slf4j.Logger;
