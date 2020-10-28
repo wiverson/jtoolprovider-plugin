@@ -29,3 +29,11 @@ buildNumber.properties
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
+java-tools-plugin.iml
+.idea/vcs.xml
+.idea/modules.xml
+.idea/misc.xml
+.idea/jarRepositories.xml
+.idea/encodings.xml
+.idea/compiler.xml
+*.iml
