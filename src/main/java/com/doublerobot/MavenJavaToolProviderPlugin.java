@@ -17,13 +17,9 @@ import java.util.spi.ToolProvider;
  * @goal run
  */
 @Mojo(name = "java-tool")
-public class Tool
-        extends AbstractMojo {
-    /**
-     * Location of the file.
-     */
-    @Parameter(property = "outputDirectory", required = true)
-    private File outputDirectory;
+public class MavenJavaToolProviderPlugin extends AbstractMojo {
+
+    private boolean failed = false;
 
     private Log log;
 
@@ -70,13 +66,10 @@ public class Tool
             return result.get();
         } else {
             log("No " + toolname + " found");
+            failed = true;
         }
 
         return null;
-    }
-
-    public void setOutputDirectory(File outputDirectory) {
-        this.outputDirectory = outputDirectory;
     }
 
     public void setToolName(String toolName) {
@@ -87,8 +80,11 @@ public class Tool
         this.args = args;
     }
 
-    public void execute()
-            throws MojoExecutionException {
+    public boolean failed() {
+        return failed;
+    }
+
+    public void execute() throws MojoExecutionException {
 
         ToolProvider tool = result(toolName);
         if (tool == null && failOnError)
@@ -123,33 +119,6 @@ public class Tool
                 log(error);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        }
-
-        File f = outputDirectory;
-
-        if (f == null)
-            return;
-
-        if (!f.exists()) {
-            f.mkdirs();
-        }
-
-        File touch = new File(f, "touch.txt");
-
-        FileWriter w = null;
-        try {
-            w = new FileWriter(touch);
-            w.write("touch.txt");
-        } catch (IOException e) {
-            throw new MojoExecutionException("Error creating file " + touch, e);
-        } finally {
-            if (w != null) {
-                try {
-                    w.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
         }
     }
 }
