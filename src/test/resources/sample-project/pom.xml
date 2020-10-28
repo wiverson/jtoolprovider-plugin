@@ -44,6 +44,15 @@
                     <execution>
                         <id>test</id>
                         <phase>test-compile</phase>
+                        <goals>
+                            <goal>java-tool</goal>
+                        </goals>
+                        <configuration>
+                            <toolName>jar</toolName>
+                            <args>
+                                <arg>--version</arg>
+                            </args>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -12,14 +12,30 @@ import java.util.Optional;
 import java.util.spi.ToolProvider;
 
 /**
- * Goal which touches a timestamp file.
- *
- * @goal run
+ * Runs arbitrary Java tools as provided by the ToolProvider API.
  */
 @Mojo(name = "java-tool")
-public class MavenJavaToolProviderPlugin extends AbstractMojo {
+public class ToolProviderAdapter extends AbstractMojo {
+
+    public enum LogLevel {
+        WARN, INFO, ERROR, DEBUG
+    }
 
     private boolean failed = false;
+
+    @Parameter(property = "writeOutputToLog", defaultValue = "true")
+    private boolean writeOutputToLog = true;
+
+    public void setWriteOutputToLog(boolean writeOutputToLog) {
+        this.writeOutputToLog = writeOutputToLog;
+    }
+
+    public void setWriteErrorsToLog(boolean writeErrorsToLog) {
+        this.writeErrorsToLog = writeErrorsToLog;
+    }
+
+    @Parameter(property = "writeErrorsToLog", defaultValue = "true")
+    private boolean writeErrorsToLog = true;
 
     private Log log;
 
@@ -52,10 +68,42 @@ public class MavenJavaToolProviderPlugin extends AbstractMojo {
         return log;
     }
 
-    private void log(String entry) {
-        if (log != null)
-            log.info(entry);
-        else System.out.println(">" + entry);
+    private String normalOutput;
+    private String errorOutput;
+
+    private void log(String entry, LogLevel level) {
+        if (log != null) {
+            switch (level) {
+                case WARN:
+                    log.warn(entry);
+                    break;
+                case INFO:
+                    log.info(entry);
+                    break;
+                case ERROR:
+                    log.error(entry);
+                    break;
+                case DEBUG:
+                    log.debug(entry);
+                    break;
+            }
+        } else {
+            switch (level) {
+                case WARN:
+                case INFO:
+                    if (writeOutputToLog)
+                        System.out.println(entry);
+                    break;
+                case ERROR:
+                    if (writeErrorsToLog)
+                        System.err.println("ERROR>" + entry);
+                    break;
+                case DEBUG:
+                    if (writeOutputToLog)
+                        System.out.println("DEBUG>" + entry);
+                    break;
+            }
+        }
     }
 
     private ToolProvider result(String toolname) {
@@ -65,7 +113,7 @@ public class MavenJavaToolProviderPlugin extends AbstractMojo {
             var t = result.get();
             return result.get();
         } else {
-            log("No " + toolname + " found");
+            log("No " + toolname + " found", LogLevel.ERROR);
             failed = true;
         }
 
@@ -91,7 +139,7 @@ public class MavenJavaToolProviderPlugin extends AbstractMojo {
             throw new MojoExecutionException("Unable to find ToolProvider [" + toolName + "]");
 
         if (tool == null) {
-            log("Unable to find ToolProvider [" + toolName + "]");
+            log("Unable to find ToolProvider [" + toolName + "]", LogLevel.ERROR);
             return;
         }
 
@@ -102,9 +150,17 @@ public class MavenJavaToolProviderPlugin extends AbstractMojo {
         try (PrintStream output = new PrintStream(outputStream, true, utf8)) {
             try (PrintStream error = new PrintStream(outputStream, true, utf8)) {
                 tool.run(output, error, args);
+            } finally {
+                errorStream.close();
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         try {
             String output = outputStream.toString(utf8);
@@ -114,11 +170,19 @@ public class MavenJavaToolProviderPlugin extends AbstractMojo {
             if (error.endsWith("\n"))
                 error = output.substring(0, output.length() - 1);
             if (output.length() > 0)
-                log(output);
+                normalOutput = output;
             if (error.length() > 0)
-                log(error);
+                errorOutput = error;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
+        if (writeOutputToLog)
+            if (normalOutput != null && normalOutput.length() > 0)
+                log(normalOutput, LogLevel.INFO);
+        if (writeErrorsToLog)
+            if (errorOutput != null && errorOutput.length() > 0)
+                log(errorOutput, LogLevel.ERROR);
+
     }
 }
