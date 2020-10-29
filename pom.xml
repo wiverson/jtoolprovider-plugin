@@ -194,7 +194,8 @@
                 <version>3.0.0-M1</version>
 
                 <configuration>
-                    <goals>deploy</goals>
+                    <goals>verify</goals>
+                    <arguments>-P release-to-central</arguments>
                 </configuration>
             </plugin>
         </plugins>
@@ -286,7 +287,7 @@
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
-                                <phase>deploy</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>sign-and-deploy-file</goal>
                                 </goals>
