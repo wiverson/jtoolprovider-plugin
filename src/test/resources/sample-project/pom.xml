@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.doublerobot</groupId>
-    <artifactId>demo</artifactId>
+    <artifactId>jtoolprovider-test-project</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>java-tools-test-project</name>
+    <name>jtoolprovider-test-project</name>
     <description>Test Project for Java Tools Maven Plugin</description>
 
     <properties>
@@ -58,6 +58,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>
