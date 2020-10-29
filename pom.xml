@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.wiverson</groupId>
     <artifactId>jtoolprovider-plugin</artifactId>
@@ -35,8 +36,8 @@
         <connection>scm:git:https://github.com/wiverson/${project.artifactId}</connection>
         <developerConnection>scm:git:https://github.com/wiverson/${project.artifactId}</developerConnection>
         <url>https://github.com/wiverson/${project.artifactId}/</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
     <distributionManagement>
         <repository>
             <id>nexus-releases</id>
@@ -177,16 +178,16 @@
                 </dependencies>
             </plugin>
 
-<!--            <plugin>-->
-<!--                <groupId>org.sonatype.plugins</groupId>-->
-<!--                <artifactId>nexus-staging-maven-plugin</artifactId>-->
-<!--                <version>1.6.8</version>-->
-<!--                <extensions>true</extensions>-->
-<!--                <configuration>-->
-<!--                    <serverId>nexus</serverId>-->
-<!--                    <nexusUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</nexusUrl>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.sonatype.plugins</groupId>-->
+            <!--                <artifactId>nexus-staging-maven-plugin</artifactId>-->
+            <!--                <version>1.6.8</version>-->
+            <!--                <extensions>true</extensions>-->
+            <!--                <configuration>-->
+            <!--                    <serverId>nexus</serverId>-->
+            <!--                    <nexusUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</nexusUrl>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -195,6 +196,7 @@
 
                 <configuration>
                     <goals>verify</goals>
+                    <preparationGoals>clean package</preparationGoals>
                     <arguments>-P release-to-central</arguments>
                 </configuration>
             </plugin>
