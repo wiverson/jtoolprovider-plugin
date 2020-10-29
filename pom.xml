@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.wiverson</groupId>
     <artifactId>jtoolprovider-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.0.4</version>
+    <version>1.0.5-SNAPSHOT</version>
 
     <name>${project.artifactId}</name>
     <url>https://github.com/wiverson/jtoolprovider-plugin</url>
@@ -35,8 +36,7 @@
         <connection>scm:git:git://github.com/wiverson/${project.artifactId}.git</connection>
         <developerConnection>scm:git:git://github.com/wiverson/${project.artifactId}.git</developerConnection>
         <url>https://github.com/wiverson/${project.artifactId}</url>
-      <tag>jtoolprovider-plugin-1.0.4</tag>
-  </scm>
+    </scm>
     <distributionManagement>
         <repository>
             <id>nexus-releases</id>
@@ -209,6 +209,15 @@
                 <configuration>
                     <serverId>nexus</serverId>
                     <nexusUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</nexusUrl>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>external.atlassian.jgitflow</groupId>
+                <artifactId>jgitflow-maven-plugin</artifactId>
+                <version>1.0-m5.1</version>
+                <configuration>
+                    <!-- see goals wiki page for configuration options -->
                 </configuration>
             </plugin>
         </plugins>
