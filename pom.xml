@@ -362,6 +362,9 @@
         </profile>
         <profile>
             <id>run-integration-test</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
