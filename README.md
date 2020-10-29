@@ -1,8 +1,14 @@
 # java-tools-plugin
  
-A simple Java plugin to bridge Maven and the Java ToolProvider API (java.util.spi.ToolProvider).
+A simple [Maven](https://maven.apache.org) plugin to bridge Maven builds and the 
+[Java ToolProvider API](https://docs.oracle.com/javase/10/docs/api/java/util/spi/ToolProvider.html).
 
-Below is a simple example of invoking the jar tool. More useful are tools such as jdeps, jlink, and jpackage.
+Below is a simple example of invoking the jar tool. 
+More useful are combining the plugin with other tools such as jdeps, jlink, and jpackage.
+By combining this plugin with
+[Maven build profiles](https://maven.apache.org/guides/introduction/introduction-to-profiles.html), 
+it's possible to build a single Maven pom.xml that can generate platform-specific installers.
+Very useful for things like working with [JavaFX](https://openjfx.io).
 
 This plugin quickly and easily bridges the rich options offered
 by Maven with the core JDK tools set in the absence of full Maven plugin integration.
