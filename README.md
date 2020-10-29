@@ -27,7 +27,7 @@ The following tools do NOT appear to work with Java 15:
 jinfo, jps, jrunscript, jshell, jstack, jstat, jstatd, rmid, rmiregistry, serialver, jmap
 
 ![mvn verify status]
-(https://github.com/wiverson/jtoolprovider/workflows/mvn%20verify/badge.svg)
+(https://github.com/wiverson/jtoolprovider-plugin/workflows/mvn%20verify/badge.svg)
 
 ## jpackage
 
