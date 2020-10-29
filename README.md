@@ -2,17 +2,17 @@
  
 A simple Java plugin to bridge Maven and the Java ToolProvider API (java.util.spi.ToolProvider).
 
-For example, here is a (not particularly helpful) example of invoking the jar tool.
-
+Below is a (not particularly helpful) example of invoking the jar tool.
+The jar tools is mostly useful because it's the most generally available.
 More useful are tools such as jdeps, jlink, and jpackage.
 
-The following tools do not appear to work with Java 15: 
-jaotc, jarsigner, java, jcmd, jconsole, jdb, jdeprscan, jfr, jhsdb, jimage,
+The following tools DO work out-of-the-box with Java 15:
+
+- jmod, jar, javac, javadoc, javap, jdeps, jlink
+
+The following tools do NOT appear to work with Java 15: 
+- jaotc, jarsigner, java, jcmd, jconsole, jdb, jdeprscan, jfr, jhsdb, jimage,
 jinfo, jps, jrunscript, jshell, jstack, jstat, jstatd, rmid, rmiregistry, serialver, jmap
-
-The following tools DO appear to work with Java 15:
-
-jmod, jar, javac, javadoc, javap, jdeps, jlink
 
 jpackage will ONLY work in Java 15 if you use the following JVM argument:
 
