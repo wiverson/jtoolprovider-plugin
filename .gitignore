@@ -37,3 +37,4 @@ java-tools-plugin.iml
 .idea/compiler.xml
 *.iml
 .idea/.name
+pom.xml.asc
