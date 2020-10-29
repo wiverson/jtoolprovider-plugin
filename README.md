@@ -26,8 +26,6 @@ The following tools do NOT appear to work with Java 15:
 - jaotc, jarsigner, java, jcmd, jconsole, jdb, jdeprscan, jfr, jhsdb, jimage,
 jinfo, jps, jrunscript, jshell, jstack, jstat, jstatd, rmid, rmiregistry, serialver, jmap
 
-[![mvn verify status](https://github.com/wiverson/jtoolprovider-plugin/workflows/mvn%20verify/badge.svg)](https://github.com/wiverson/jtoolprovider-plugin/actions?query=workflow%3A%22mvn+verify%22)
-
 ## jpackage
 
 jpackage will ONLY work in Java 15 if you use the following argument when you launch the JVM:
@@ -43,6 +41,10 @@ The best option will likely vary depending on your situation (e.g. local dev env
 CI system, etc.)
 
 jpackage is expected to move out of incubator status with the release of Java 16.
+
+# Build Info
+
+[![mvn verify status](https://github.com/wiverson/jtoolprovider-plugin/workflows/mvn%20verify/badge.svg)](https://github.com/wiverson/jtoolprovider-plugin/actions?query=workflow%3A%22mvn+verify%22)
 
 # Simple Example Plugin Configuration
 
