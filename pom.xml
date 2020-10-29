@@ -153,7 +153,6 @@
 
         </pluginManagement>
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -163,10 +162,7 @@
                     <target>10</target>
                 </configuration>
             </plugin>
-
-
             <plugin>
-
                 <!-- It may be strange to configure this plugin in build, but that's where
                 the dependency config goes. This configuration adds markdown support to the
                 report generation. -->
@@ -208,11 +204,6 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
             <version>3.6.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-invoker-plugin</artifactId>
-            <version>3.2.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -282,6 +273,9 @@
     <profiles>
         <profile>
             <id>release-to-central</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
