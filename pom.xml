@@ -6,32 +6,29 @@
     <packaging>maven-plugin</packaging>
     <version>1.0-SNAPSHOT</version>
 
-    <name>java-tools-plugin Maven Mojo</name>
-    <url>http://maven.apache.org</url>
+    <name>java-tools-plugin</name>
+    <url>https://github.com/wiverson/java-tools-plugin</url>
 
     <properties>
-        <!-- Eliminates the file encoding warning. Of course, all of your files
-        are probably be UTF-8 nowadays. -->
+        <!-- Eliminates the file encoding warning. UTF-8 all the things! -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <project.url>https://github.com/dev9com/mvnrunnner</project.url>
+        <project.url>https://github.com/wiverson/java-tools-plugin</project.url>
 
         <!-- See https://github.com/mike-ensor/clickconcepts-master-pom/blob/master/pom.xml -->
         <site-docs.url>/${env.HOME}/sitedocs/${project.artifactId}</site-docs.url>
         <!-- Best practice is to override this property in your settings.xml file; used for directory to hold cloned repository -->
         <scmPublish.checkoutDirectory>${project.build.directory}/scmpublish</scmPublish.checkoutDirectory>
-        <!-- @OVERRIDE this property per each project -->
-        <!--        <repository.domain>github.com</repository.domain>-->
-        <!-- @OVERRIDE this property per each project -->
-        <!--        <repository.user>wiverson</repository.user>-->
-        <!-- @OVERRIDE this property per each project -->
-        <!--        <repository.name>mvnwatcher</repository.name>-->
-
+        <!-- @OVERRIDE this property per each project-->
+        <repository.domain>github.com</repository.domain>
+        <!-- @OVERRIDE this property per each project-->
+        <repository.user>wiverson</repository.user>
+        <!-- @OVERRIDE this property per each project-->
+        <repository.name>java-tools-plugin</repository.name>
     </properties>
     <build>
         <pluginManagement>
             <plugins>
-                <!-- Yeah, ok, this is my OCD side showing.  ;)  -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
