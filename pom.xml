@@ -29,6 +29,7 @@
         <repository.user>wiverson</repository.user>
         <!-- @OVERRIDE this property per each project-->
         <repository.name>${project.artifactId}</repository.name>
+        <project.scm.id>github</project.scm.id>
     </properties>
     <scm>
         <connection>scm:git:git://github.com/wiverson/${project.artifactId}.git</connection>
