@@ -26,7 +26,8 @@ The following tools do NOT appear to work with Java 15:
 - jaotc, jarsigner, java, jcmd, jconsole, jdb, jdeprscan, jfr, jhsdb, jimage,
 jinfo, jps, jrunscript, jshell, jstack, jstat, jstatd, rmid, rmiregistry, serialver, jmap
 
-https://github.com/wiverson/jtoolprovider/workflows/mvn%20verify/badge.svg
+![mvn verify status]
+(https://github.com/wiverson/jtoolprovider/workflows/mvn%20verify/badge.svg)
 
 ## jpackage
 
