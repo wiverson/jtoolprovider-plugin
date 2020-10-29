@@ -32,8 +32,8 @@
         <project.scm.id>github</project.scm.id>
     </properties>
     <scm>
-        <connection>scm:git:git://github.com/wiverson/${project.artifactId}</connection>
-        <developerConnection>scm:git:git://github.com/wiverson/${project.artifactId}</developerConnection>
+        <connection>scm:git:https://github.com/wiverson/${project.artifactId}</connection>
+        <developerConnection>scm:git:https://github.com/wiverson/${project.artifactId}</developerConnection>
         <url>https://github.com/wiverson/${project.artifactId}/</url>
       <tag>jtoolprovider-plugin-1.0.11</tag>
   </scm>
