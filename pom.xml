@@ -1,0 +1,386 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.github.wiverson</groupId>
+    <artifactId>jtoolprovider-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
+    <version>1.0.5-SNAPSHOT</version>
+
+    <name>${project.artifactId}</name>
+    <url>https://github.com/wiverson/jtoolprovider-plugin</url>
+    <description>Maven Plugin Adapter for the ToolProvider API</description>
+    <inceptionYear>2020</inceptionYear>
+    <prerequisites>
+        <maven>3.6.3</maven>
+    </prerequisites>
+
+    <properties>
+        <!-- Eliminates the file encoding warning. UTF-8 all the things! -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <project.url>https://github.com/wiverson/${project.artifactId}</project.url>
+
+        <!-- See https://github.com/mike-ensor/clickconcepts-master-pom/blob/master/pom.xml -->
+        <site-docs.url>/${env.HOME}/sitedocs/${project.artifactId}</site-docs.url>
+        <!-- Best practice is to override this property in your settings.xml file; used for directory to hold cloned repository -->
+        <scmPublish.checkoutDirectory>${project.build.directory}/scmpublish</scmPublish.checkoutDirectory>
+        <!-- @OVERRIDE this property per each project-->
+        <repository.domain>github.com</repository.domain>
+        <!-- @OVERRIDE this property per each project-->
+        <repository.user>wiverson</repository.user>
+        <!-- @OVERRIDE this property per each project-->
+        <repository.name>${project.artifactId}</repository.name>
+        <project.scm.id>github</project.scm.id>
+    </properties>
+    <scm>
+        <connection>scm:git:git://github.com/wiverson/${project.artifactId}.git</connection>
+        <developerConnection>scm:git:git://github.com/wiverson/${project.artifactId}.git</developerConnection>
+        <url>https://github.com/wiverson/${project.artifactId}</url>
+    </scm>
+    <distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <name>Nexus Release Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <site>
+            <id>site-docs</id>
+            <url>file://${site-docs.url}</url>
+        </site>
+    </distributionManagement>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/${repository.user}/${repository.name}/issues</url>
+    </issueManagement>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>license</comments>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>wiverson</id>
+            <email>wiverson AT gmail DOT com</email>
+            <url>https://github.com/wiverson</url>
+        </developer>
+    </developers>
+    <build>
+        <extensions>
+            <extension>
+                <!-- add support for ssh/scp -->
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>3.4.1</version>
+            </extension>
+            <extension>
+                <!-- Deploy to WEBdav servers -->
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav-jackrabbit</artifactId>
+                <version>3.4.1</version>
+            </extension>
+        </extensions>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-plugin-plugin</artifactId>
+                    <version>3.6.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.9.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+            </plugins>
+
+        </pluginManagement>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>10</source>
+                    <target>10</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>setup-test-project</id>
+                        <goals>
+                            <goal>install</goal>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                            <failIfNoProjects>true</failIfNoProjects>
+                            <postBuildHookScript>verify</postBuildHookScript>
+                            <pom>${project.build.directory}/test-classes/sample-project/pom.xml</pom>
+                            <!--                            <debug>true</debug>-->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+
+                <!-- It may be strange to configure this plugin in build, but that's where
+                the dependency config goes. This configuration adds markdown support to the
+                report generation. -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-module-markdown</artifactId>
+                        <version>1.9.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>nexus</serverId>
+                    <nexusUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</nexusUrl>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>external.atlassian.jgitflow</groupId>
+                <artifactId>jgitflow-maven-plugin</artifactId>
+                <version>1.0-m5.1</version>
+                <configuration>
+                    <!-- see goals wiki page for configuration options -->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>3.6.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-invoker-plugin</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+            <version>3.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.18.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.30</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+
+
+    </dependencies>
+    <reporting>
+        <plugins>
+
+            <!-- Basic report generation. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.1.1</version>
+            </plugin>
+
+            <!-- Dependency version reporting. Relies on standard version numbering
+            - you should use standard version numbering too!
+            http://mojo.codehaus.org/versions-maven-plugin/version-rules.html -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.8.1</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>dependency-updates-report</report>
+                            <report>plugin-updates-report</report>
+                            <report>property-updates-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+
+        </plugins>
+    </reporting>
+
+    <profiles>
+        <profile>
+            <id>release-to-central</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign-and-deploy-file</goal>
+                                </goals>
+                                <configuration>
+                                    <keyname>02221F8D5220E48EA5DDE32776EB5BD27A89C060</keyname>
+                                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                                    <pomFile>pom.xml</pomFile>
+                                    <artifactId>${project.artifactId}</artifactId>
+                                    <groupId>${project.groupId}</groupId>
+                                    <version>${project.version}</version>
+
+                                    <file>target/${project.artifactId}-${project.version}.jar</file>
+                                    <files>
+                                        target/${project.artifactId}-${project.version}-sources.jar,target/${project.artifactId}-${project.version}-javadoc.jar
+                                    </files>
+                                    <types>jar,jar</types>
+                                    <classifiers>sources,javadoc</classifiers>
+                                    <repositoryId>nexus</repositoryId>
+                                    <gpgArguments>
+                                        <argument>--armor</argument>
+                                        <argument>--detach-sig</argument>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Used to push a build to Nexus, which can then be used to push to Central. -->
+                    <!--<plugin>-->
+                    <!--<groupId>org.sonatype.plugins</groupId>-->
+                    <!--<artifactId>nexus-staging-maven-plugin</artifactId>-->
+                    <!--<version>1.6.3</version>-->
+                    <!--<extensions>true</extensions>-->
+                    <!--<configuration>-->
+                    <!--<serverId>nexus</serverId>-->
+                    <!--<nexusUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</nexusUrl>-->
+                    <!--<autoReleaseAfterClose>true</autoReleaseAfterClose>-->
+                    <!--</configuration>-->
+                    <!--</plugin>-->
+
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
+
+</project>
