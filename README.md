@@ -47,7 +47,7 @@ jpackage is expected to move out of incubator status with the release of Java 16
 ```xml
 <plugin>
     <groupId>io.github.wiverson</groupId>
-    <artifactId>java-tools-plugin</artifactId>
+    <artifactId>jtoolprovider-plugin</artifactId>
     <version>1.0-SNAPSHOT</version>
     <executions>
         <execution>
@@ -77,7 +77,7 @@ the underlying tool.
 ```xml
  <plugin>
     <groupId>io.github.wiverson</groupId>
-    <artifactId>java-tools-plugin</artifactId>
+    <artifactId>jtoolprovider-plugin</artifactId>
     <version>1.0-SNAPSHOT</version>
     <executions>
         <execution>

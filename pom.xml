@@ -2,18 +2,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.wiverson</groupId>
-    <artifactId>java-tools-plugin</artifactId>
+    <artifactId>jtoolprovider-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <version>1.0-SNAPSHOT</version>
 
-    <name>java-tools-plugin</name>
-    <url>https://github.com/wiverson/java-tools-plugin</url>
+    <name>${project.artifactId}</name>
+    <url>https://github.com/wiverson/jtoolprovider-plugin</url>
 
     <properties>
         <!-- Eliminates the file encoding warning. UTF-8 all the things! -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <project.url>https://github.com/wiverson/java-tools-plugin</project.url>
+        <project.url>https://github.com/wiverson/${project.artifactId}</project.url>
 
         <!-- See https://github.com/mike-ensor/clickconcepts-master-pom/blob/master/pom.xml -->
         <site-docs.url>/${env.HOME}/sitedocs/${project.artifactId}</site-docs.url>
@@ -24,16 +24,16 @@
         <!-- @OVERRIDE this property per each project-->
         <repository.user>wiverson</repository.user>
         <!-- @OVERRIDE this property per each project-->
-        <repository.name>java-tools-plugin</repository.name>
+        <repository.name>${project.artifactId}</repository.name>
     </properties>
     <scm>
-        <developerConnection>scm:git:git://github.com/wiverson/java-tools-plugin</developerConnection>
+        <developerConnection>scm:git:git://github.com/wiverson/${project.artifactId}</developerConnection>
     </scm>
     <distributionManagement>
         <repository>
             <id>github</id>
             <name>GitHub wiverson Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/wiverson/java-tools-plugin</url>
+            <url>https://maven.pkg.github.com/wiverson/${project.artifactId}</url>
         </repository>
     </distributionManagement>
     <build>

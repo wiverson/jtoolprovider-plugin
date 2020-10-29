@@ -36,3 +36,4 @@ java-tools-plugin.iml
 .idea/encodings.xml
 .idea/compiler.xml
 *.iml
+.idea/.name
