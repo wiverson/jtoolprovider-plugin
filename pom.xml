@@ -9,6 +9,10 @@
     <name>${project.artifactId}</name>
     <url>https://github.com/wiverson/jtoolprovider-plugin</url>
     <description>Maven Plugin Adapter for the ToolProvider API</description>
+    <inceptionYear>2020</inceptionYear>
+    <prerequisites>
+        <maven>3.6.3</maven>
+    </prerequisites>
 
     <properties>
         <!-- Eliminates the file encoding warning. UTF-8 all the things! -->
@@ -34,16 +38,49 @@
     </scm>
     <distributionManagement>
         <repository>
-            <id>github</id>
-            <name>GitHub wiverson Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/wiverson/${project.artifactId}</url>
+            <id>nexus-releases</id>
+            <name>Nexus Release Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
+        <site>
+            <id>site-docs</id>
+            <url>file://${site-docs.url}</url>
+        </site>
     </distributionManagement>
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/wiverson/jtoolprovider-plugin/issues</url>
+        <url>https://github.com/${repository.user}/${repository.name}/issues</url>
     </issueManagement>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>license</comments>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>wiverson</id>
+            <email>wiverson AT gmail DOT com</email>
+            <url>https://github.com/wiverson</url>
+        </developer>
+    </developers>
     <build>
+        <extensions>
+            <extension>
+                <!-- add support for ssh/scp -->
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>3.4.1</version>
+            </extension>
+            <extension>
+                <!-- Deploy to WEBdav servers -->
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav-jackrabbit</artifactId>
+                <version>3.4.1</version>
+            </extension>
+        </extensions>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -101,6 +138,16 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0-M5</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
             </plugins>
 
         </pluginManagement>
@@ -136,6 +183,32 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+
+                <!-- It may be strange to configure this plugin in build, but that's where
+                the dependency config goes. This configuration adds markdown support to the
+                report generation. -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-module-markdown</artifactId>
+                        <version>1.9.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>nexus</serverId>
+                    <nexusUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</nexusUrl>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -215,5 +288,89 @@
 
         </plugins>
     </reporting>
+
+    <profiles>
+        <profile>
+            <id>release-to-central</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign-and-deploy-file</goal>
+                                </goals>
+                                <configuration>
+                                    <keyname>02221F8D5220E48EA5DDE32776EB5BD27A89C060</keyname>
+                                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                                    <pomFile>pom.xml</pomFile>
+                                    <artifactId>${project.artifactId}</artifactId>
+                                    <groupId>${project.groupId}</groupId>
+                                    <version>${project.version}</version>
+
+                                    <file>target/${project.artifactId}-${project.version}.jar</file>
+                                    <files>
+                                        target/${project.artifactId}-${project.version}-sources.jar,target/${project.artifactId}-${project.version}-javadoc.jar
+                                    </files>
+                                    <types>jar,jar</types>
+                                    <classifiers>sources,javadoc</classifiers>
+                                    <repositoryId>nexus</repositoryId>
+                                    <gpgArguments>
+                                        <argument>--armor</argument>
+                                        <argument>--detach-sig</argument>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Used to push a build to Nexus, which can then be used to push to Central. -->
+                    <!--<plugin>-->
+                    <!--<groupId>org.sonatype.plugins</groupId>-->
+                    <!--<artifactId>nexus-staging-maven-plugin</artifactId>-->
+                    <!--<version>1.6.3</version>-->
+                    <!--<extensions>true</extensions>-->
+                    <!--<configuration>-->
+                    <!--<serverId>nexus</serverId>-->
+                    <!--<nexusUrl>https://oss.sonatype.org/service/local/staging/deploy/maven2</nexusUrl>-->
+                    <!--<autoReleaseAfterClose>true</autoReleaseAfterClose>-->
+                    <!--</configuration>-->
+                    <!--</plugin>-->
+
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
 
 </project>
