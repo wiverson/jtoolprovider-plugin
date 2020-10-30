@@ -6,7 +6,10 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.spi.ToolProvider;
@@ -22,6 +25,9 @@ public class ToolProviderAdapter extends AbstractMojo {
     }
 
     private boolean failed = false;
+
+    @Parameter(property = "echoArguments", defaultValue = "false")
+    private boolean echoArguments = false;
 
     @Parameter(property = "writeOutputToLog", defaultValue = "true")
     private boolean writeOutputToLog = true;
@@ -67,6 +73,12 @@ public class ToolProviderAdapter extends AbstractMojo {
     public Log getLog() {
         return log;
     }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    private int errorCode = -1;
 
     private String normalOutput;
     private String errorOutput;
@@ -135,21 +147,23 @@ public class ToolProviderAdapter extends AbstractMojo {
     public void execute() throws MojoExecutionException {
 
         ToolProvider tool = result(toolName);
-        if (tool == null && failOnError)
-            throw new MojoExecutionException("Unable to find ToolProvider [" + toolName + "]");
-
-        if (tool == null) {
-            log("Unable to find ToolProvider [" + toolName + "]", LogLevel.ERROR);
-            return;
-        }
+        if (tool == null)
+            if (failOnError)
+                throw new MojoExecutionException("Unable to find ToolProvider [" + toolName + "]");
+            else {
+                log("Unable to find ToolProvider [" + toolName + "]", LogLevel.ERROR);
+                return;
+            }
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
+        errorCode = -1;
+
         final String utf8 = StandardCharsets.UTF_8.name();
         try (PrintStream output = new PrintStream(outputStream, true, utf8)) {
             try (PrintStream error = new PrintStream(outputStream, true, utf8)) {
-                tool.run(output, error, args);
+                errorCode = tool.run(output, error, args);
             } finally {
                 errorStream.close();
             }
@@ -162,6 +176,21 @@ public class ToolProviderAdapter extends AbstractMojo {
                 e.printStackTrace();
             }
         }
+
+        if (errorCode != 0) {
+            log(toolName + " failed with error code [" + errorCode + "]", LogLevel.ERROR);
+            for (String arg : args) {
+                log("   " + arg, LogLevel.ERROR);
+            }
+            if (failOnError)
+                throw new MojoExecutionException(toolName + " " + errorCode);
+        } else {
+            if (echoArguments)
+                for (String arg : args) {
+                    log("   " + arg, LogLevel.INFO);
+                }
+        }
+
         try {
             String output = outputStream.toString(utf8);
             String error = errorStream.toString(utf8);
@@ -177,10 +206,10 @@ public class ToolProviderAdapter extends AbstractMojo {
             e.printStackTrace();
         }
 
-        if (writeOutputToLog)
+        if (writeOutputToLog || errorCode != 0)
             if (normalOutput != null && normalOutput.length() > 0)
                 log(normalOutput, LogLevel.INFO);
-        if (writeErrorsToLog)
+        if (writeErrorsToLog || errorCode != 0)
             if (errorOutput != null && errorOutput.length() > 0)
                 log(errorOutput, LogLevel.ERROR);
 

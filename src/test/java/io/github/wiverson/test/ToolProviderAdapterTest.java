@@ -6,10 +6,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 
 public class ToolProviderAdapterTest {
 
     final Logger logger = LoggerFactory.getLogger(ToolProviderAdapterTest.class);
+
     String[] tools = {"jpackage", "jar", "javac", "jdeps", "jlink"};
 
     @Test
@@ -20,8 +24,26 @@ public class ToolProviderAdapterTest {
             tool.setToolName(toolName);
             tool.setFailOnError(false);
             tool.execute();
-            logger.info(toolName + " found.");
         }
+    }
+
+    @Test
+    public void BadArgumentsCheck() {
+        ToolProviderAdapter tool = new ToolProviderAdapter();
+        tool.setToolName("jar");
+        tool.setFailOnError(true);
+        tool.setArgs(new String[]{"barf"});
+
+        boolean exceptionFound = false;
+
+        try {
+            tool.execute();
+        } catch (MojoExecutionException e) {
+            exceptionFound = true;
+        }
+
+        assertTrue(exceptionFound);
+        assertEquals(1, tool.getErrorCode());
     }
 
     @Test
@@ -32,6 +54,7 @@ public class ToolProviderAdapterTest {
             tool.setToolName(toolName);
             tool.setFailOnError(false);
             tool.setArgs(new String[]{"--help"});
+            tool.setWriteOutputToLog(false);
             tool.execute();
         }
     }

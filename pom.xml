@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.wiverson</groupId>
     <artifactId>jtoolprovider-plugin</artifactId>
@@ -12,6 +13,10 @@
     <prerequisites>
         <maven>3.6.3</maven>
     </prerequisites>
+    <organization>
+        <name>Will Iverson</name>
+        <url>https://github.com/wiverson</url>
+    </organization>
 
     <properties>
         <!-- Eliminates the file encoding warning. UTF-8 all the things! -->
@@ -199,6 +204,7 @@
                     <arguments>-P release-to-central</arguments>
                 </configuration>
             </plugin>
+            
         </plugins>
     </build>
 
