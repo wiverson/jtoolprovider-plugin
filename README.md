@@ -15,20 +15,21 @@ by Maven with the core JDK tools set in the absence of full Maven plugin integra
 While tools like jdeps, jlink, and jpackage can be wrangled with shell scripts, 
 Maven is much, much easier for working with things like classpaths and directories.
 
-The following tools work out-of-the-box with Java 15:
+The following tools work out-of-the-box with the Java 15 ToolProvider API (and therefore this plugin):
 
 - jmod, jar, javac, javadoc, javap, jdeps, jlink
 
 For ordinary use, you should stick with the standard Maven plugins for javac, jar, 
 and javadoc.
 
-The following tools do NOT appear to work with Java 15: 
+The following tools do NOT appear to work with the Java 15 ToolProvider API: 
 - jaotc, jarsigner, java, jcmd, jconsole, jdb, jdeprscan, jfr, jhsdb, jimage,
 jinfo, jps, jrunscript, jshell, jstack, jstat, jstatd, rmid, rmiregistry, serialver, jmap
 
 ## jpackage
 
-jpackage will ONLY work in Java 15 if you use the following argument when you launch the JVM:
+jpackage will ONLY work with the Java 15 ToolProvider (and therefore this plugin) if you use the 
+following argument when you launch the JVM:
 
 `--add-modules jdk.incubator.jpackage`
 
