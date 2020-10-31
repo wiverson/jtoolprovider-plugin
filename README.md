@@ -45,7 +45,8 @@ jpackage is expected to move out of incubator status with the release of Java 16
 
 # Build Info
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.wiverson/jtoolprovider-plugin/badge.svg)](https://mvnrepository.com/artifact/io.github.wiverson/jtoolprovider-plugin/1.0.21)
+**Current version** 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.wiverson/jtoolprovider-plugin/badge.svg)](https://search.maven.org/search?q=a:jtoolprovider-plugin)
 
 [![mvn verify status](https://github.com/wiverson/jtoolprovider-plugin/workflows/mvn%20verify/badge.svg)](https://github.com/wiverson/jtoolprovider-plugin/actions?query=workflow%3A%22mvn+verify%22)
 
@@ -55,7 +56,7 @@ jpackage is expected to move out of incubator status with the release of Java 16
 <plugin>
     <groupId>io.github.wiverson</groupId>
     <artifactId>jtoolprovider-plugin</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>*use current version*</version>
     <executions>
         <execution>
             <id>test</id>
@@ -85,7 +86,7 @@ the underlying tool.
  <plugin>
     <groupId>io.github.wiverson</groupId>
     <artifactId>jtoolprovider-plugin</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>*use current version*</version>
     <executions>
         <execution>
             <id>test</id>
