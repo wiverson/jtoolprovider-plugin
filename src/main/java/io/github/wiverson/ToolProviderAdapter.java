@@ -182,8 +182,7 @@ public class ToolProviderAdapter extends AbstractMojo {
             for (String arg : args) {
                 log("   " + arg, LogLevel.ERROR);
             }
-            if (failOnError)
-                throw new MojoExecutionException(toolName + " " + errorCode);
+
         } else {
             if (echoArguments)
                 for (String arg : args) {
@@ -213,5 +212,7 @@ public class ToolProviderAdapter extends AbstractMojo {
             if (errorOutput != null && errorOutput.length() > 0)
                 log(errorOutput, LogLevel.ERROR);
 
+        if (failOnError && errorCode != 0)
+            throw new MojoExecutionException(toolName + " " + errorCode);
     }
 }
