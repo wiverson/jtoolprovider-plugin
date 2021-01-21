@@ -1,23 +1,28 @@
 # jtoolprovider-plugin
  
-A simple [Maven](https://maven.apache.org) plugin to bridge Maven builds and the 
+A simple [Maven](https://maven.apache.org) Plugin to bridge Maven and the 
 [Java ToolProvider API](https://docs.oracle.com/javase/10/docs/api/java/util/spi/ToolProvider.html).
 
-Below is a simple example of invoking the jar tool. 
-More useful are combining the plugin with other tools such as jdeps, jlink, and jpackage.
+This plugin is particularly helpful when working with tools such as jdeps, jlink, and jpackage.
 By combining this plugin with
 [Maven build profiles](https://maven.apache.org/guides/introduction/introduction-to-profiles.html), 
 it's possible to build a single Maven pom.xml that can generate platform-specific installers.
 Very useful for things like working with [JavaFX](https://openjfx.io).
 
-This plugin quickly and easily bridges the rich options offered
-by Maven with the core JDK tools set in the absence of full Maven plugin integration.
-While tools like jdeps, jlink, and jpackage can be wrangled with shell scripts, 
-Maven is much, much easier for working with things like classpaths and directories.
+For a complete example of the use of this Plugin to generate JavaFX macOS and Windows native desktop
+applications - complete with native installer 
+packages - [see this template](https://github.com/wiverson/maven-jpackage-template).
+
+This plugin quickly and easily bridges the rich capabilities of Maven with core JDK tools 
+that lack full Maven plugin integration.  While tools like jdeps, jlink, and jpackage can be
+wrangled with shell scripts, Maven is much, much easier for working with things like 
+CLASSPATH, module paths, and directories.
 
 The following tools work out-of-the-box with the Java 15 ToolProvider API (and therefore this plugin):
 
 - jmod, jar, javac, javadoc, javap, jdeps, jlink
+
+As of Java 15, jpackage requires additional configuration as described below.
 
 For ordinary use, you should stick with the standard Maven plugins for javac, jar, 
 and javadoc.
@@ -25,6 +30,24 @@ and javadoc.
 The following tools do NOT appear to work with the Java 15 ToolProvider API: 
 - jaotc, jarsigner, java, jcmd, jconsole, jdb, jdeprscan, jfr, jhsdb, jimage,
 jinfo, jps, jrunscript, jshell, jstack, jstat, jstatd, rmid, rmiregistry, serialver, jmap
+
+## Shortcuts
+
+The plugin now supports a set of shortcuts to make it easier to write less verbose commands
+for tools - in particular, jdeps, jlink, and jpackage. For example, instead of writing:
+
+```
+<arg>--module-path</arg>
+<arg>${javafx.libs}</arg>
+```
+
+You can now just write
+
+```
+<modulePath>${javafx.libs}</modulePath>
+```
+
+The list of shortcuts can be found at the end of this document.
 
 ## jpackage
 
@@ -46,10 +69,9 @@ jpackage is expected to move out of incubator status with the release of Java 16
 # Build Info
 
 **Current version** 
+
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.wiverson/jtoolprovider-plugin/badge.svg)](https://search.maven.org/search?q=a:jtoolprovider-plugin)
-
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.wiverson/jtoolprovider-plugin.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.wiverson%22%20AND%20a:%22jtoolprovider-plugin%22)
-
 [![mvn verify status](https://github.com/wiverson/jtoolprovider-plugin/workflows/mvn%20verify/badge.svg)](https://github.com/wiverson/jtoolprovider-plugin/actions?query=workflow%3A%22mvn+verify%22)
 
 # Simple Example Plugin Configuration
@@ -109,3 +131,60 @@ the underlying tool.
     </executions>
 </plugin>
 ```
+
+## Shortcuts
+
+The following shortcuts can be used to make expressing arguments cleaner. See the top of this 
+document for examples. You can just use the args/arg versions and/or these shortcuts. The 
+shortcuts are all passed to the tool before the args/arg values.
+
+- classPath
+- addModules
+- appImage
+- appVersion
+- check
+- compress
+- copyright
+- description
+- dest
+- dir
+- disablePlugin
+- exclude
+- fileAssociations
+- generateModuleInfo
+- generateOpenModule
+- hashModules
+- headerFiles
+- icon
+- input
+- installDir
+- javaOptions
+- jlinkOptions
+- launcher
+- licenseFile
+- limitModules
+- macPackageIdentifier
+- macPackageName
+- macPackageSigningPrefix
+- macSigningKeyUserName
+- macSigningKeychain
+- mainJar
+- modulePath
+- module
+- multiRelease
+- name
+- output
+- postProcessPath
+- regex
+- require
+- resourceDir
+- resourcesLastSorter
+- runtimeImage
+- saveOpts
+- suggestProviders
+- system
+- temp
+- type
+- upgradeModulePath
+- vendor
+- winMenuGroup
