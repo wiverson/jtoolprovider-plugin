@@ -9,6 +9,8 @@ Run this command to deploy to central.
 
 The following is a template for the needed ~/.m2/settings.xml file.
 
+Once that is done, go to [Nexus](https://oss.sonatype.org/#stagingRepositories) to close the open repo.
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
