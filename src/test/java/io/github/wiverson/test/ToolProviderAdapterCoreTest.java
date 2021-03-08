@@ -2,6 +2,7 @@ package io.github.wiverson.test;
 
 import io.github.wiverson.ToolProviderAdapterHints;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ public class ToolProviderAdapterCoreTest {
     String[] tools = {"jpackage", "jar", "javac", "jdeps", "jlink"};
 
     @Test
-    public void BasicCheck() throws MojoExecutionException {
+    public void BasicCheck() throws MojoExecutionException, MojoFailureException {
 
         for (String toolName : tools) {
             ToolProviderAdapterHints tool = new ToolProviderAdapterHints();
@@ -43,7 +44,7 @@ public class ToolProviderAdapterCoreTest {
 
         try {
             tool.execute();
-        } catch (MojoExecutionException e) {
+        } catch (MojoExecutionException | MojoFailureException e) {
             exceptionFound = true;
         }
 
@@ -52,7 +53,7 @@ public class ToolProviderAdapterCoreTest {
     }
 
     @Test
-    public void ArgumentsCheck() throws MojoExecutionException {
+    public void ArgumentsCheck() throws MojoExecutionException, MojoFailureException {
 
         for (String toolName : tools) {
             ToolProviderAdapterHints tool = new ToolProviderAdapterHints();
@@ -86,7 +87,7 @@ public class ToolProviderAdapterCoreTest {
                     logger.info(toolName + " NOT available.");
                 else
                     logger.info(toolName + " available.");
-            } catch (MojoExecutionException e) {
+            } catch (MojoExecutionException | MojoFailureException e) {
                 logger.error(toolName + " NOT available.");
             }
         }

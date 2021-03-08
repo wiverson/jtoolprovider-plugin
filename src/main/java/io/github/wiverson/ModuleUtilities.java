@@ -14,10 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,12 +29,39 @@ public class ModuleUtilities extends AbstractMojo {
 
     @Parameter(defaultValue = "${project.compileClasspathElements}", readonly = true, required = true)
     private List<String> compilePath;
+    @Parameter(required = true, defaultValue = "${project.build.directory}/module-info-work")
+    private File moduleInfoWorkDirectory;
+    /**
+     * Where to place the transitive Maven dependencies that ARE packaged as modules
+     */
+    @Parameter(required = true, defaultValue = "${project.build.directory}/declared-modules")
+    private File foundModulesDirectory;
+    /**
+     * Where to place the transitive Maven dependencies that are not packaged as modules
+     */
+    @Parameter(required = true, defaultValue = "${project.build.directory}/declared-not-modules")
+    private File notModulesDirectory;
+    /**
+     * The directories for provided modules (e.g. JavaFX jmods)
+     */
+    @Parameter
+    private List<File> providedModuleDirectories;
+    @Parameter(alias = "ignoreJars")
+    private List<String> ignoreJars;
+    @Parameter(alias = "stripJars")
+    private List<String> stripJars;
+    @Parameter
+    private int javaVersion = Runtime.version().feature();
+    @Parameter
+    private boolean debug;
+
+    @Parameter(name = "autoClean", defaultValue = "true")
+    private boolean autoClean;
 
     @Override
     public void setLog(org.apache.maven.plugin.logging.Log log) {
         this.logger = log;
     }
-
 
     private boolean isModule(JarFile jar) {
 
@@ -89,7 +113,6 @@ public class ModuleUtilities extends AbstractMojo {
         }
     }
 
-
     private void generateModuleInfo(File jarFile) throws MojoExecutionException, IOException {
         RunTool runTool = new RunTool(getLog(), debug, debug, true);
 
@@ -127,6 +150,9 @@ public class ModuleUtilities extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+
+        if (autoClean)
+            cleanUp();
 
         List<File> needsModuleInfo = new ArrayList<>();
 
@@ -194,6 +220,30 @@ public class ModuleUtilities extends AbstractMojo {
         logger.info("Found " + foundModules + " modular jars (stripped " + strippedModules + ") and " + foundWithoutModules + " ordinary jars.");
     }
 
+    private void cleanUp() throws MojoFailureException {
+        List<File> toClean = List.of(
+                moduleInfoWorkDirectory,
+                foundModulesDirectory,
+                notModulesDirectory);
+
+        for (File clean : toClean) {
+            try {
+                if (clean.exists()) {
+                    Files.walk(clean.toPath())
+                            .map(Path::toFile)
+                            .sorted((o1, o2) -> -o1.compareTo(o2))
+                            .forEach(File::delete);
+                    clean.mkdirs();
+                    if (debug)
+                        logger.info("Reset directory " + clean.getAbsolutePath());
+                }
+            } catch (IOException ioException) {
+                logger.error(ioException);
+                throw new MojoFailureException(ioException.getMessage());
+            }
+        }
+    }
+
     private String buildModulesDirectory() {
         StringBuilder result = new StringBuilder();
         result.append(foundModulesDirectory.getAbsolutePath());
@@ -232,7 +282,7 @@ public class ModuleUtilities extends AbstractMojo {
     }
 
     private boolean matches(JarFile jarFile, List<String> matcher, String description) {
-        if (matcher == null)
+        if (matcher == null && debug)
             logger.warn("No matcher for " + description + " defined");
 
         if (matcher != null)
@@ -241,37 +291,4 @@ public class ModuleUtilities extends AbstractMojo {
                     return true;
         return false;
     }
-
-    @Parameter(required = true)
-    private File moduleInfoWorkDirectory;
-
-    /**
-     * Where to place the transitive Maven dependencies that ARE packaged as modules
-     */
-    @Parameter(required = true)
-    private File foundModulesDirectory;
-
-    /**
-     * Where to place the transitive Maven dependencies that are not packaged as modules
-     */
-    @Parameter(required = true)
-    private File notModulesDirectory;
-
-    /**
-     * The directories for provided modules (e.g. JavaFX jmods)
-     */
-    @Parameter
-    private List<File> providedModuleDirectories;
-
-    @Parameter(alias = "ignoreJars")
-    private List<String> ignoreJars;
-
-    @Parameter(alias = "stripJars")
-    private List<String> stripJars;
-
-    @Parameter
-    private int javaVersion = Runtime.version().feature();
-
-    @Parameter
-    private boolean debug;
 }

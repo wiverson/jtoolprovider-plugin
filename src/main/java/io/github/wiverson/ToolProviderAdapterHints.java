@@ -1,9 +1,14 @@
 package io.github.wiverson;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -174,8 +179,9 @@ public class ToolProviderAdapterHints extends ToolProviderAdapterCore {
     public String hashModules = "";
     @Parameter(property = HEADER_FILES)
     public String headerFiles = "";
+    @Parameter
+    public List<File> cleanDirectories;
     private boolean failed;
-
 
     private void add(List<String> list, String arg, String value) {
         if (value == null)
@@ -248,7 +254,11 @@ public class ToolProviderAdapterHints extends ToolProviderAdapterCore {
         return failed;
     }
 
-    public void execute() throws MojoExecutionException {
+    public void execute() throws MojoExecutionException, MojoFailureException {
+
+        if (cleanDirectories != null && cleanDirectories.size() > 0)
+            clean();
+
         RunTool runTool = new RunTool(getLog(), echoArguments, writeOutputToLog, writeErrorsToLog);
 
         List<String> arguments = addShortcutArguments();
@@ -257,5 +267,24 @@ public class ToolProviderAdapterHints extends ToolProviderAdapterCore {
         runTool.runTool(toolName, arguments, failOnError);
         errorCode = runTool.errorCode;
         failed = runTool.failed;
+    }
+
+    private void clean() throws MojoFailureException {
+        for (File clean : cleanDirectories) {
+            try {
+                if (clean.exists()) {
+                    Files.walk(clean.toPath())
+                            .map(Path::toFile)
+                            .sorted((o1, o2) -> -o1.compareTo(o2))
+                            .forEach(File::delete);
+                    clean.mkdirs();
+                    if (echoArguments)
+                        getLog().info("Reset directory " + clean.getAbsolutePath());
+                }
+            } catch (IOException ioException) {
+                getLog().error(ioException);
+                throw new MojoFailureException(ioException.getMessage());
+            }
+        }
     }
 }
