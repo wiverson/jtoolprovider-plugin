@@ -301,24 +301,6 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-scm-plugin</artifactId>
-                        <version>1.11.2</version>
-                        <executions>
-                            <execution>
-                                <id>status</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>status</goal>
-                                </goals>
-                                <configuration>
-                                    <baseDir>${project.basedir}</baseDir>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>1.6</version>
                         <executions>
