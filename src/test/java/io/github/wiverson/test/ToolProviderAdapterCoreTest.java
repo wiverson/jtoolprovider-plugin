@@ -48,7 +48,7 @@ public class ToolProviderAdapterCoreTest {
         }
 
         assertTrue(exceptionFound);
-        assertEquals(1, tool.getErrorCode());
+        assertEquals(-1, tool.getErrorCode());
     }
 
     @Test

@@ -4,15 +4,9 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.spi.ToolProvider;
 
 
 @Mojo(name = "java-tool")
@@ -180,6 +174,7 @@ public class ToolProviderAdapterHints extends ToolProviderAdapterCore {
     public String hashModules = "";
     @Parameter(property = HEADER_FILES)
     public String headerFiles = "";
+    private boolean failed;
 
 
     private void add(List<String> list, String arg, String value) {
@@ -249,78 +244,18 @@ public class ToolProviderAdapterHints extends ToolProviderAdapterCore {
         return result;
     }
 
+    public boolean failed() {
+        return failed;
+    }
+
     public void execute() throws MojoExecutionException {
-
-        ToolProvider tool = result(toolName);
-        if (tool == null)
-            if (failOnError)
-                throw new MojoExecutionException("Unable to find ToolProvider [" + toolName + "]");
-            else {
-                log("Unable to find ToolProvider [" + toolName + "]", LogLevel.ERROR);
-                return;
-            }
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-
-        errorCode = -1;
+        RunTool runTool = new RunTool(getLog(), echoArguments, writeOutputToLog, writeErrorsToLog);
 
         List<String> arguments = addShortcutArguments();
         arguments.addAll(Arrays.asList(args));
 
-        final String utf8 = StandardCharsets.UTF_8.name();
-        try (PrintStream output = new PrintStream(outputStream, true, utf8)) {
-            try (PrintStream error = new PrintStream(outputStream, true, utf8)) {
-                errorCode = tool.run(output, error, arguments.toArray(new String[0]));
-            } finally {
-                errorStream.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                outputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (errorCode != 0) {
-            log(toolName + " failed with error code [" + errorCode + "]", LogLevel.ERROR);
-            for (String arg : arguments) {
-                log("   " + arg, LogLevel.ERROR);
-            }
-
-        } else {
-            if (echoArguments)
-                for (String arg : arguments) {
-                    log("   " + arg, LogLevel.INFO);
-                }
-        }
-
-        try {
-            String output = outputStream.toString(utf8);
-            String error = errorStream.toString(utf8);
-            if (output.endsWith("\n"))
-                output = output.substring(0, output.length() - 1);
-            if (error.endsWith("\n"))
-                error = output.substring(0, output.length() - 1);
-            if (output.length() > 0)
-                normalOutput = output;
-            if (error.length() > 0)
-                errorOutput = error;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        if (writeOutputToLog || errorCode != 0)
-            if (normalOutput != null && normalOutput.length() > 0)
-                log(normalOutput, LogLevel.INFO);
-        if (writeErrorsToLog || errorCode != 0)
-            if (errorOutput != null && errorOutput.length() > 0)
-                log(errorOutput, LogLevel.ERROR);
-
-        if (failOnError && errorCode != 0)
-            throw new MojoExecutionException(toolName + " " + errorCode);
+        runTool.runTool(toolName, arguments, failOnError);
+        errorCode = runTool.errorCode;
+        failed = runTool.failed;
     }
 }

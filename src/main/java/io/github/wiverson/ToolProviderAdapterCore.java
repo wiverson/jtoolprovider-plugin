@@ -4,15 +4,11 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
 
-import java.util.Optional;
-import java.util.spi.ToolProvider;
-
 /**
  * Runs arbitrary Java tools as provided by the ToolProvider API.
  */
 public abstract class ToolProviderAdapterCore extends AbstractMojo {
 
-    private boolean failed = false;
     @Parameter(property = "echoArguments", defaultValue = "false")
     protected boolean echoArguments = false;
     @Parameter(property = "writeOutputToLog", defaultValue = "true")
@@ -62,65 +58,12 @@ public abstract class ToolProviderAdapterCore extends AbstractMojo {
         return errorCode;
     }
 
-    protected void log(String entry, LogLevel level) {
-        if (log != null) {
-            switch (level) {
-                case WARN:
-                    log.warn(entry);
-                    break;
-                case INFO:
-                    log.info(entry);
-                    break;
-                case ERROR:
-                    log.error(entry);
-                    break;
-                case DEBUG:
-                    log.debug(entry);
-                    break;
-            }
-        } else {
-            switch (level) {
-                case WARN:
-                case INFO:
-                    if (writeOutputToLog)
-                        System.out.println(entry);
-                    break;
-                case ERROR:
-                    if (writeErrorsToLog)
-                        System.err.println("ERROR>" + entry);
-                    break;
-                case DEBUG:
-                    if (writeOutputToLog)
-                        System.out.println("DEBUG>" + entry);
-                    break;
-            }
-        }
-    }
-
-    protected ToolProvider result(String toolname) {
-        Optional<ToolProvider> result = ToolProvider.findFirst(toolname);
-
-        if (result.isPresent()) {
-            var t = result.get();
-            return result.get();
-        } else {
-            log("No " + toolname + " found", LogLevel.ERROR);
-            failed = true;
-        }
-
-        return null;
-    }
-
     public void setToolName(String toolName) {
         this.toolName = toolName;
     }
 
     public void setArgs(String[] args) {
         this.args = args;
-    }
-
-    public boolean failed() {
-        return failed;
     }
 
     public enum LogLevel {
