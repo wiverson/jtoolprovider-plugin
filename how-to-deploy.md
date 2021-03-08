@@ -3,7 +3,7 @@
 
 Run this command to deploy to central.
 
-`mvn --batch-mode release:prepare release:perform`
+`mvn --batch-mode release:prepare release:perform -Prelease-to-central`
 
 # settings.xml
 
