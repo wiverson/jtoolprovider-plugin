@@ -12,11 +12,16 @@ import org.moditect.commands.AddModuleInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -57,6 +62,33 @@ public class ModuleUtilities extends AbstractMojo {
         return false;
     }
 
+    private void stripModuleInfo(File jarFile) throws IOException {
+        if (debug)
+            logger.info("Removing module-info...");
+        Map<String, String> env = new HashMap<>();
+        env.put("create", "false");
+
+        URI fileUri = jarFile.toURI();
+
+        URI uri = URI.create("jar:" + fileUri.toString()); // Zip file path
+
+        List<String> removeList = new ArrayList<>();
+        removeList.add("module-info.class");
+        for (int i = 8; i < javaVersion; i++) {
+            removeList.add("META-INF/versions/" + i + "/module-info.class");
+        }
+
+        try (FileSystem zipfs = FileSystems.newFileSystem(uri, env)) {
+            for (String s : removeList) {
+                if (Files.exists(zipfs.getPath(s))) {
+                    Files.delete(zipfs.getPath(s)); // File inside zip to delete
+                    if (debug)
+                        logger.info("Removed " + s);
+                }
+            }
+        }
+    }
+
 
     private void generateModuleInfo(File jarFile) throws MojoExecutionException, IOException {
         RunTool runTool = new RunTool(getLog(), debug, debug, true);
@@ -66,6 +98,8 @@ public class ModuleUtilities extends AbstractMojo {
         arguments.add("--api-only");
         arguments.add("--no-recursive");
         arguments.add("--add-modules=ALL-MODULE-PATH");
+        arguments.add("--multi-release");
+        arguments.add(Integer.toString(javaVersion));
         arguments.add("--module-path");
         arguments.add(buildModulesDirectory());
         arguments.add("--generate-module-info");
@@ -98,25 +132,36 @@ public class ModuleUtilities extends AbstractMojo {
 
         int foundModules = 0;
         int foundWithoutModules = 0;
+        int strippedModules = 0;
 
         for (String s : compilePath) {
             File entry = new File(s);
             if (!entry.isDirectory())
                 try {
                     JarFile jarFile = new JarFile(entry);
-                    if (!skip(jarFile))
-                        if (!isModule(jarFile)) {
+                    if (!matches(jarFile, ignoreJars, "ignoreJars"))
+                        if (isModule(jarFile)) {
+                            if (debug)
+                                logger.info(s + " IS a module");
+                            foundModules++;
+                            FileUtils.copyFileToDirectory(entry, foundModulesDirectory);
+                            if (matches(jarFile, stripJars, "stripJars")) {
+                                File newFile = new File(foundModulesDirectory, entry.getName());
+                                strippedModules++;
+                                if (debug)
+                                    logger.info("Stripping info from " + newFile.getAbsolutePath());
+                                stripModuleInfo(newFile);
+                            } else {
+                                if (debug)
+                                    logger.info(jarFile.getName() + " didn't match strip");
+                            }
+                        } else {
                             if (debug)
                                 logger.info(s + " is NOT a module, generating module info");
                             FileUtils.copyFileToDirectory(entry, notModulesDirectory);
                             File added = new File(notModulesDirectory, entry.getName());
                             foundWithoutModules++;
                             needsModuleInfo.add(added);
-                        } else {
-                            if (debug)
-                                logger.info(s + " IS a module");
-                            foundModules++;
-                            FileUtils.copyFileToDirectory(entry, foundModulesDirectory);
                         }
                 } catch (IOException e) {
                     logger.error(e);
@@ -146,11 +191,10 @@ public class ModuleUtilities extends AbstractMojo {
             }
         }
 
-        logger.info("Found " + foundModules + " modular jars and " + foundWithoutModules + " ordinary jars.");
+        logger.info("Found " + foundModules + " modular jars (stripped " + strippedModules + ") and " + foundWithoutModules + " ordinary jars.");
     }
 
     private String buildModulesDirectory() {
-
         StringBuilder result = new StringBuilder();
         result.append(foundModulesDirectory.getAbsolutePath());
         result.append(File.pathSeparator);
@@ -179,8 +223,7 @@ public class ModuleUtilities extends AbstractMojo {
 
         for (File file : moduleInfoWorkDirectory.listFiles()) {
             if (matchName.startsWith(file.getName())) {
-                File result = new File(file + "/module-info.java");
-
+                File result = new File(file + "/versions/" + javaVersion + "/module-info.java");
                 return Files.readString(Path.of(result.getAbsolutePath()), StandardCharsets.US_ASCII);
             }
         }
@@ -188,12 +231,12 @@ public class ModuleUtilities extends AbstractMojo {
         throw new IllegalArgumentException("Unable to find a module info for " + jarFile);
     }
 
-    private boolean skip(JarFile jarFile) {
-        if (ignoreJars == null)
-            logger.warn("No skip jars defined");
+    private boolean matches(JarFile jarFile, List<String> matcher, String description) {
+        if (matcher == null)
+            logger.warn("No matcher for " + description + " defined");
 
-        if (ignoreJars != null)
-            for (String s : ignoreJars)
+        if (matcher != null)
+            for (String s : matcher)
                 if (jarFile.getName().contains(s))
                     return true;
         return false;
@@ -222,6 +265,9 @@ public class ModuleUtilities extends AbstractMojo {
 
     @Parameter(alias = "ignoreJars")
     private List<String> ignoreJars;
+
+    @Parameter(alias = "stripJars")
+    private List<String> stripJars;
 
     @Parameter
     private int javaVersion = Runtime.version().feature();
