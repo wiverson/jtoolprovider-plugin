@@ -1,7 +1,7 @@
 # jtoolprovider-plugin
 
 This Maven Plugin does two things. First, it automatically transforms your [Maven](https://maven.apache.org) dependency
-graph into Java modules. Second, it bridges Maven and the built-in Java tools like jdeps, jlink, and jpackage.
+graph into Java modules. Second, it bridges Maven and built-in Java tools like jdeps, jlink, and jpackage.
 
 Why would you care about any of that? The main reason: this plugin makes it much, much easier to generate native Java
 desktop applications with nice, small installers. Here's a
@@ -23,10 +23,11 @@ with [JavaFX](https://openjfx.io).
 
 # Next Steps
 
-- Read the [collect-modules](collect-modules-doc.md) documentation
-- Read the [java-tool](java-tool-doc.md) documentation
+- Read the [collect-modules](collect-modules-doc.md) goal documentation
+- Read the [java-tool](java-tool-doc.md) goal documentation
 - Check out the
-  [complete working example of use of this plugin to build a JavaFX desktop application](https://github.com/wiverson/maven-jpackage-template)
+  [complete working example this plugin in action](https://github.com/wiverson/maven-jpackage-template) building a
+  JavaFX desktop application, with GitHub Actions to generate the macOS, Windows, and Linux versions
 
 # Background Information
 
