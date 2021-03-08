@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.wiverson</groupId>
     <artifactId>jtoolprovider-plugin</artifactId>
@@ -203,7 +204,7 @@
                     <arguments>-P release-to-central</arguments>
                 </configuration>
             </plugin>
-            
+
         </plugins>
     </build>
 
@@ -259,7 +260,6 @@
         </dependency>
 
 
-
     </dependencies>
     <reporting>
         <plugins>
@@ -300,6 +300,24 @@
             </activation>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-scm-plugin</artifactId>
+                        <version>1.11.2</version>
+                        <executions>
+                            <execution>
+                                <id>status</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>status</goal>
+                                </goals>
+                                <configuration>
+                                    <baseDir>${project.basedir}</baseDir>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
