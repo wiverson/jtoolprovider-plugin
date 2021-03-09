@@ -121,8 +121,6 @@ public class ModuleUtilities extends AbstractMojo {
 
         List<String> arguments = new ArrayList<>();
         arguments.add("--ignore-missing-deps");
-        arguments.add("--api-only");
-        arguments.add("--no-recursive");
         arguments.add("--add-modules=ALL-MODULE-PATH");
         arguments.add("--multi-release");
         arguments.add(Integer.toString(javaVersion));
@@ -180,6 +178,7 @@ public class ModuleUtilities extends AbstractMojo {
                                 if (debug)
                                     logger.info("Stripping info from " + newFile.getAbsolutePath());
                                 stripModuleInfo(newFile);
+                                needsModuleInfo.add(newFile);
                             } else {
                                 if (debug)
                                     logger.info(jarFile.getName() + " didn't match strip");
