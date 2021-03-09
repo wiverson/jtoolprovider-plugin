@@ -14,7 +14,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -126,7 +129,7 @@ public class ModuleUtilities extends AbstractMojo {
         arguments.add("--module-path");
         arguments.add(buildModulesDirectory());
         arguments.add("--generate-module-info");
-        arguments.add(moduleInfoWorkDirectory.getAbsolutePath());
+        arguments.add(moduleInfoWorkDirectory.getAbsolutePath() + File.separatorChar + jarFile.getName().replace(".jar", ""));
         arguments.add(jarFile.getAbsolutePath());
 
         if (debug) {
@@ -260,25 +263,22 @@ public class ModuleUtilities extends AbstractMojo {
     }
 
     private String findModInfo(File jar) throws IOException {
-        File jarFile = new File(jar.getName());
-        String matchName = jarFile.getName().replace("-", ".");
+        String matchName = jar.getName().replace("-", ".");
 
         if (moduleInfoWorkDirectory == null)
             throw new IOException("No module info output directory set");
         if (!moduleInfoWorkDirectory.exists())
             Files.createDirectories(moduleInfoWorkDirectory.toPath());
-
         if (!moduleInfoWorkDirectory.isDirectory())
             throw new IOException("module info output directory is not a directory");
 
-        for (File file : moduleInfoWorkDirectory.listFiles()) {
-            if (matchName.startsWith(file.getName())) {
-                File result = new File(file + "/versions/" + javaVersion + "/module-info.java");
-                return Files.readString(Path.of(result.getAbsolutePath()), StandardCharsets.US_ASCII);
-            }
+        try {
+            File moduleInfoLocation = new File(moduleInfoWorkDirectory.getAbsolutePath() + File.separatorChar + jar.getName().replace(".jar", ""));
+            File generatedInfo = moduleInfoLocation.listFiles()[0].listFiles()[0].listFiles()[0].listFiles()[0];
+            return Files.readString(Path.of(generatedInfo.getAbsolutePath()), StandardCharsets.US_ASCII);
+        } catch (ArrayIndexOutOfBoundsException arrayIndexOutOfBoundsException) {
+            throw new IllegalArgumentException("Unable to find a module info for " + jar);
         }
-
-        throw new IllegalArgumentException("Unable to find a module info for " + jarFile);
     }
 
     private boolean matches(JarFile jarFile, List<String> matcher, String description) {
