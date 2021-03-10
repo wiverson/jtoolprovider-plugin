@@ -18,10 +18,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -60,6 +57,12 @@ public class ModuleUtilities extends AbstractMojo {
 
     @Parameter(name = "autoClean", defaultValue = "true")
     private boolean autoClean;
+
+    @Parameter
+    private Properties moduleInfoOverrides;
+
+    public final String GENERATE_INFO = "info";
+    public final String GENERATE_OPEN = "open";
 
     @Override
     public void setLog(org.apache.maven.plugin.logging.Log log) {
@@ -117,6 +120,20 @@ public class ModuleUtilities extends AbstractMojo {
     }
 
     private void generateModuleInfo(File jarFile) throws MojoExecutionException, IOException {
+
+        String provided = isProvided(jarFile);
+
+        if (provided != null) {
+            String basePath =
+                    moduleInfoWorkDirectory.getAbsolutePath() + File.separatorChar +
+                            jarFile.getName().replace(".jar", "");
+            basePath = basePath + "copied" + File.separatorChar + "versions" + File.separatorChar + javaVersion + File.separatorChar;
+            FileUtils.copyFileToDirectory(provided, basePath);
+            if (debug)
+                logger.info("Copied " + provided + " to " + basePath);
+            return;
+        }
+
         RunTool runTool = new RunTool(getLog(), debug, debug, true);
 
         List<String> arguments = new ArrayList<>();
@@ -126,7 +143,12 @@ public class ModuleUtilities extends AbstractMojo {
         arguments.add(Integer.toString(javaVersion));
         arguments.add("--module-path");
         arguments.add(buildModulesDirectory());
-        arguments.add("--generate-module-info");
+
+        if (isGenerated(jarFile))
+            arguments.add("--generate-module-info");
+        else
+            arguments.add("--generate-open-module");
+
         arguments.add(moduleInfoWorkDirectory.getAbsolutePath() + File.separatorChar + jarFile.getName().replace(".jar", ""));
         arguments.add(jarFile.getAbsolutePath());
 
@@ -135,6 +157,31 @@ public class ModuleUtilities extends AbstractMojo {
                 logger.info(s);
         }
         runTool.runTool("jdeps", arguments, true);
+    }
+
+    private boolean isGenerated(File jarFile) {
+        for (Object key : moduleInfoOverrides.keySet()) {
+            String keyString = key.toString();
+            if (jarFile.getName().contains(keyString))
+                if (GENERATE_INFO.compareToIgnoreCase(moduleInfoOverrides.get(key).toString()) == 0)
+                    return true;
+        }
+        return false;
+    }
+
+    private String isProvided(File jarFile) {
+        for (Object key : moduleInfoOverrides.keySet()) {
+            String keyString = key.toString();
+            if (jarFile.getName().contains(keyString)) {
+                if (GENERATE_INFO.compareToIgnoreCase(moduleInfoOverrides.get(key).toString()) == 0)
+                    return null;
+                if (GENERATE_OPEN.compareToIgnoreCase(moduleInfoOverrides.get(key).toString()) == 0)
+                    return null;
+
+                return moduleInfoOverrides.get(key).toString();
+            }
+        }
+        return null;
     }
 
     private void addModuleInfo(File jarFile) throws IOException {
@@ -156,6 +203,8 @@ public class ModuleUtilities extends AbstractMojo {
             cleanUp();
 
         List<File> needsModuleInfo = new ArrayList<>();
+
+        checkCustomProperties();
 
         int foundModules = 0;
         int foundWithoutModules = 0;
@@ -220,6 +269,31 @@ public class ModuleUtilities extends AbstractMojo {
         }
 
         logger.info("Found " + foundModules + " modular jars (stripped " + strippedModules + ") and " + foundWithoutModules + " ordinary jars.");
+    }
+
+
+    private void checkCustomProperties() throws MojoFailureException {
+        if (moduleInfoOverrides == null)
+            moduleInfoOverrides = new Properties();
+
+        for (Object key : moduleInfoOverrides.keySet()) {
+            Object value = moduleInfoOverrides.get(key);
+
+            if (value == null)
+                throw new MojoFailureException("Set " + key.toString() + " but missing value");
+
+            String valueString = value.toString();
+            if (GENERATE_INFO.compareToIgnoreCase(valueString) == 0)
+                break;
+            if (GENERATE_OPEN.compareToIgnoreCase(valueString) == 0)
+                break;
+
+            File file = new File(valueString);
+            if (file.exists() && file.isFile() && file.getName().compareToIgnoreCase("module-info.java") == 0)
+                break;
+            throw new MojoFailureException("Set " + key.toString() + " but value should be [" + GENERATE_OPEN + "," +
+                    GENERATE_INFO + "] or a valid path to a module-info.java file.");
+        }
     }
 
     private void cleanUp() throws MojoFailureException {
