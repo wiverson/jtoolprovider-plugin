@@ -181,6 +181,13 @@ public class ToolProviderAdapterHints extends ToolProviderAdapterCore {
     public String headerFiles = "";
     @Parameter
     public List<File> cleanDirectories;
+
+    @Parameter
+    public List<File> removeDirectories;
+
+    @Parameter(defaultValue = "false")
+    private boolean skip = false;
+
     private boolean failed;
 
     private void add(List<String> list, String arg, String value) {
@@ -255,11 +262,13 @@ public class ToolProviderAdapterHints extends ToolProviderAdapterCore {
     }
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip)
+            return;
 
-        if (cleanDirectories != null && cleanDirectories.size() > 0)
-            clean();
+        clean(cleanDirectories, true);
+        clean(removeDirectories, false);
 
-        RunTool runTool = new RunTool(getLog(), echoArguments, writeOutputToLog, writeErrorsToLog);
+        RunTool runTool = new RunTool(getLog(), debug, writeOutputToLog, writeErrorsToLog);
 
         List<String> arguments = addShortcutArguments();
         arguments.addAll(Arrays.asList(args));
@@ -269,17 +278,27 @@ public class ToolProviderAdapterHints extends ToolProviderAdapterCore {
         failed = runTool.failed;
     }
 
-    private void clean() throws MojoFailureException {
-        for (File clean : cleanDirectories) {
+    private void clean(List<File> directory, boolean replace) throws MojoFailureException {
+
+        if (directory == null)
+            return;
+        if (directory.size() == 0)
+            return;
+
+        for (File clean : directory) {
             try {
                 if (clean.exists()) {
                     Files.walk(clean.toPath())
                             .map(Path::toFile)
                             .sorted((o1, o2) -> -o1.compareTo(o2))
                             .forEach(File::delete);
-                    clean.mkdirs();
-                    if (echoArguments)
-                        getLog().info("Reset directory " + clean.getAbsolutePath());
+                    if (replace)
+                        clean.mkdirs();
+                    if (debug)
+                        if (replace)
+                            getLog().info("Cleaned directory " + clean.getAbsolutePath());
+                        else
+                            getLog().info("Reset directory " + clean.getAbsolutePath());
                 }
             } catch (IOException ioException) {
                 getLog().error(ioException);

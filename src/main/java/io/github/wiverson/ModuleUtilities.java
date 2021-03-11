@@ -25,8 +25,9 @@ import java.util.zip.ZipEntry;
 @Mojo(name = "collect-modules", requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class ModuleUtilities extends AbstractMojo {
 
+    public final String GENERATE_INFO = "info";
+    public final String GENERATE_OPEN = "open";
     private Log logger;
-
     @Parameter(defaultValue = "${project.compileClasspathElements}", readonly = true, required = true)
     private List<String> compilePath;
     @Parameter(required = true, defaultValue = "${project.build.directory}/module-info-work")
@@ -54,15 +55,12 @@ public class ModuleUtilities extends AbstractMojo {
     private int javaVersion = Runtime.version().feature();
     @Parameter
     private boolean debug;
-
     @Parameter(name = "autoClean", defaultValue = "true")
     private boolean autoClean;
-
     @Parameter
     private Properties moduleInfoOverrides;
-
-    public final String GENERATE_INFO = "info";
-    public final String GENERATE_OPEN = "open";
+    @Parameter(defaultValue = "false")
+    private boolean skip = false;
 
     @Override
     public void setLog(org.apache.maven.plugin.logging.Log log) {
@@ -198,6 +196,9 @@ public class ModuleUtilities extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+
+        if (skip)
+            return;
 
         if (autoClean)
             cleanUp();

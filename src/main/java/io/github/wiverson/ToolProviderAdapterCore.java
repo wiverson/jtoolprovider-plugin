@@ -9,28 +9,28 @@ import org.apache.maven.plugins.annotations.Parameter;
  */
 public abstract class ToolProviderAdapterCore extends AbstractMojo {
 
-    @Parameter(property = "echoArguments", defaultValue = "false")
-    protected boolean echoArguments = false;
-    @Parameter(property = "writeOutputToLog", defaultValue = "true")
-    protected boolean writeOutputToLog = true;
-    @Parameter(property = "writeErrorsToLog", defaultValue = "true")
-    protected boolean writeErrorsToLog = true;
-    private Log log;
-    /**
-     * Name of the tool to run
-     */
-    @Parameter(property = "toolName", required = true)
-    protected String toolName;
     /**
      * Arguments to pass to tool when run
      */
     @Parameter(property = "args")
     public String[] args = {"--version"};
+    @Parameter(property = "debug", defaultValue = "false")
+    protected boolean debug = false;
+    @Parameter(property = "writeOutputToLog", defaultValue = "true")
+    protected boolean writeOutputToLog = true;
+    @Parameter(property = "writeErrorsToLog", defaultValue = "true")
+    protected boolean writeErrorsToLog = true;
+    /**
+     * Name of the tool to run
+     */
+    @Parameter(property = "toolName", required = true)
+    protected String toolName;
     @Parameter(property = "failOnError", defaultValue = "true")
     protected boolean failOnError = true;
     protected int errorCode = -1;
     protected String normalOutput;
     protected String errorOutput;
+    private Log log;
 
     public void setWriteOutputToLog(boolean writeOutputToLog) {
         this.writeOutputToLog = writeOutputToLog;
