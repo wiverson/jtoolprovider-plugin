@@ -1,5 +1,26 @@
 # Goal: collect-modules
 
+## You Probably Don't Want To Use This Goal
+
+First of all, a brief note. The Java module system really isn't set up to be usable by ordinary developers. As
+seen in this [very, very long GitHub issue](https://github.com/wiverson/maven-jpackage-template/issues/8), 
+despite many days of effort I was unable to create a working modules build for a Spring Boot application. And that's
+with a decent working knowledge of how the module system works - in the end the produced builds still ran into
+mysterious errors (e.g. a runtime message that spring-core can't see spring-annotations, despite both being declared
+as open modules).
+
+In the end, my conclusion is that the module system and adding module-info to libraries is fine for very specific
+use cases (e.g. JavaFX), but for the vast, vast majority of developers it is probably preferable best to just
+regard it as a JDK development implementation detail, with the only useful scenario being the production of a
+stripped down JVM.
+
+In other words, while this particular usage of this plugin (generating modules) is an interesting artifact, at
+this point I'd be sorely pressed to come up with a scenario where I would actually recommend using it.
+
+So... umm. Yeah.
+
+## Documentation
+
 The goal `collect-modules` makes it much easier to integrate the standard Maven dependency system with the
 [Java module system](https://www.baeldung.com/java-9-modularity). Java modules allow
 [jlink](https://docs.oracle.com/en/java/javase/15/docs/specs/man/jlink.html) tool to generate a nice, slim custom JVM,
@@ -114,4 +135,13 @@ private boolean debug;
 // this to false for very rare debugging
 @Parameter(name = "autoClean", defaultValue = "true")
 private boolean autoClean;
+
+// The key for these properties are a simple String contains comparison. The value is the desired action.
+// Supported values are:
+//     info - this will cause jdeps to use --generate-module-info to generate the module-info.java
+//     open - this will cause jdeps to use --generate-open-module to generate the module-info.java
+//     /a/path/of/some/kind/module-info.java - will skip the jdeps execution for this specific jar
+//                                             and use the custom module-info.java instead.
+@Parameter
+private Properties moduleInfoOverrides;
 ```
