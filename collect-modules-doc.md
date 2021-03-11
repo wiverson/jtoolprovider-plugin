@@ -136,6 +136,9 @@ private boolean debug;
 @Parameter(name = "autoClean", defaultValue = "true")
 private boolean autoClean;
 
+@Parameter(defaultValue = "false")
+private boolean skip = false;
+
 // The key for these properties are a simple String contains comparison. The value is the desired action.
 // Supported values are:
 //     info - this will cause jdeps to use --generate-module-info to generate the module-info.java

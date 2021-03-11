@@ -102,7 +102,7 @@ jpackage is expected to move out of incubator status with the release of Java 16
 
 # Kitchen Sink
 
-Here's an example with all of the currently available configuration options.
+Here's an example with more configuration options.
 
 Most of the interesting configuration options are the arguments passed to the underlying tool.
 
@@ -131,6 +131,45 @@ Most of the interesting configuration options are the arguments passed to the un
         </execution>
     </executions>
 </plugin>
+```
+
+# Options
+
+```java
+// Standard operation - pass in a list of arguments to the tool
+@Parameter(property = "args")
+public String[]args={"--version"};
+
+// Writes additional information to output to make it easier to troubleshoot
+@Parameter(property = "debug", defaultValue = "false")
+protected boolean debug=false;
+
+@Parameter(property = "writeOutputToLog", defaultValue = "true")
+protected boolean writeOutputToLog=true;
+
+@Parameter(property = "writeErrorsToLog", defaultValue = "true")
+protected boolean writeErrorsToLog=true;
+
+// Which tool to run - e.g. jdeps, jpackage, jlink, etc.
+@Parameter(property = "toolName", required = true)
+protected String toolName;
+
+// Fail / terminate the Maven build if there is a failure running the tool
+@Parameter(property = "failOnError", defaultValue = "true")
+protected boolean failOnError=true;
+
+// List of directories that will have the contents deleted, but the directory
+// will remain.
+@Parameter
+public List<File> cleanDirectories;
+
+// List of directories that will be removed completely. Some tools (e.g.
+// jlink) want to create the output directory before execution.
+@Parameter
+public List<File> removeDirectories;
+
+@Parameter(defaultValue = "false")
+private boolean skip=false;
 ```
 
 ## Shortcuts
